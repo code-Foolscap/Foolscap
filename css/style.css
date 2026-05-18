@@ -149,6 +149,11 @@ html.no-js #scrim { display: none !important; }
 .doc-card:hover { background: var(--paper); }
 .doc-card-upload { box-shadow: inset 0 0 0 1px var(--faint); }
 .doc-card-upload .doc-name::after { content: " ＋"; color: var(--faint); }
+.doc-card.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.doc-card.is-disabled:hover { background: var(--bg); }
 
 .own-tools { margin-bottom: 22px; }
 .own-doc { white-space: pre-wrap; min-height: 52vh; outline: none; }

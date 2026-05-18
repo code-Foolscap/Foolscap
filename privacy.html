@@ -7,15 +7,15 @@
 <title>Privacy — Foolscap</title>
 <meta name="description" content="How Foolscap handles your data: documents stay on your device; the website uses Google Analytics for anonymous usage statistics.">
 <link rel="stylesheet" href="css/style.css">
-<!-- Google Analytics 4. Replace G-XXXXXXXXXX with your real Measurement ID. -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<!-- Google Analytics 4 (consent-gated via js/consent.js; off until Accept). Property G-P17MEHGPR0. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-P17MEHGPR0"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){ dataLayer.push(arguments); }
 gtag('js', new Date());
 gtag('consent', 'default', { analytics_storage: 'denied' });
 try { if (localStorage.getItem('foolscap:consent') === 'granted') gtag('consent', 'update', { analytics_storage: 'granted' }); } catch (e) {}
-gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
+gtag('config', 'G-P17MEHGPR0', { anonymize_ip: true });
 </script>
 <script src="js/consent.js" defer></script>
 </head>

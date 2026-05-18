@@ -111,16 +111,20 @@ function buildGrid() {
     card.addEventListener("click", () => openDocument(doc.id));
     els.docGrid.appendChild(card);
   }
-  // 8th cell: bring your own contract.
+  // 8th cell: bring your own contract — DISABLED in this preview build. The
+  // paste/upload path has no signature block yet (see TODO.md §1), so signed
+  // uploaded contracts would print without visible signatures. Re-enable by
+  // restoring the click handler once that is built.
   const up = document.createElement("button");
   up.type = "button";
-  up.className = "doc-card doc-card-upload";
+  up.className = "doc-card doc-card-upload is-disabled";
+  up.disabled = true;
   up.setAttribute("role", "listitem");
+  up.setAttribute("aria-disabled", "true");
   up.innerHTML = `
     <span class="doc-cat">Bring your own</span>
     <span class="doc-name">Your contract</span>
-    <span class="doc-blurb">Paste or upload a contract you already have, then review, sign, and seal it the same way.</span>`;
-  up.addEventListener("click", openUpload);
+    <span class="doc-blurb">Paste or upload a contract you already have — <strong>coming soon</strong>. Temporarily disabled in this preview while signature handling for custom documents is finished.</span>`;
   els.docGrid.appendChild(up);
 }
 
