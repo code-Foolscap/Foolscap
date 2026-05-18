@@ -52,8 +52,22 @@ body {
   flex-direction: column;
   min-height: 100dvh;
 }
-.topbar, .sitefoot { flex: none; }
+.topbar, .sitefoot, .preview-banner { flex: none; }
 .picker { flex: 1 0 auto; }
+
+/* Pre-launch notice. Monochrome (no extra accent), screen-only — must NEVER
+   print onto a contract or certificate. */
+.preview-banner {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+  padding: 8px 16px;
+}
+.preview-banner strong { font-weight: 700; text-decoration: underline; }
+@media print { .preview-banner { display: none !important; } }
 
 /* No-JS */
 html.no-js .topnav,
