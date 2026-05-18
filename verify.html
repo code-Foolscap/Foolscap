@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.classList.replace('no-js','js')</script>
+<title>Verify a document — Foolscap</title>
+<meta name="description" content="Check a Foolscap-signed document's integrity locally in your browser — recompute its SHA-256 fingerprint and compare it to the one in the signing certificate. No upload, no server.">
+<link rel="stylesheet" href="css/style.css">
+<!-- Google Analytics 4. Replace G-XXXXXXXXXX with your real Measurement ID. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+gtag('js', new Date());
+gtag('consent', 'default', { analytics_storage: 'denied' });
+try { if (localStorage.getItem('foolscap:consent') === 'granted') gtag('consent', 'update', { analytics_storage: 'granted' }); } catch (e) {}
+gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
+</script>
+<script src="js/consent.js" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="index.html">Foolscap</a>
+  <nav class="topnav">
+    <a class="btn" href="index.html">Back to app</a>
+  </nav>
+</header>
+
+<main class="legal">
+  <h1>Verify a document</h1>
+  <p class="muted">Local integrity check — nothing is uploaded.</p>
+
+  <p>A Foolscap signing certificate prints a <strong>SHA-256 fingerprint</strong> of the exact document text both parties signed. To check that a document in front of you is unaltered, paste its text below and paste the fingerprint from the certificate. Your browser recomputes the SHA-256 and compares — entirely on this page, with <strong>no server and no upload</strong>. We never see the document or the result.</p>
+
+  <h2>1. The document text</h2>
+  <p class="muted small">Paste the contract text exactly as it was signed (the body, not the certificate block), or load a .txt file.</p>
+  <textarea id="docIn" class="session-code" rows="12" placeholder="Paste the signed document text here…"></textarea>
+  <p><button type="button" id="fileBtn" class="btn">Load .txt file</button></p>
+
+  <h2>2. The fingerprint from the certificate</h2>
+  <textarea id="hashIn" class="session-code" rows="2" placeholder="Paste the Document SHA-256 / fingerprint from the signing certificate (64 hex characters)"></textarea>
+
+  <p><button type="button" id="checkBtn" class="btn btn-primary">Check</button></p>
+
+  <div id="result" hidden>
+    <h2>Result</h2>
+    <p id="resultLine" class="session-ok"></p>
+    <p class="muted small">Computed SHA-256: <code id="computed"></code></p>
+  </div>
+
+  <h2>What this does and does not tell you</h2>
+  <p>If the fingerprints match, the text you pasted is byte-for-byte the text that was signed — it has not been altered. If they do not match, the text differs from what was signed (even one changed character changes the whole fingerprint), or it was not pasted exactly.</p>
+  <p>This is a technical integrity check only. It does <strong>not</strong> verify identities, confirm that a signature is legally valid or enforceable, or prove who signed — Foolscap is not a law firm and gives no legal advice. There is no central registry: because Foolscap runs no server, verification is something anyone can do locally with the document and its certificate, not a lookup against us.</p>
+
+  <p class="muted" style="font-size:12px;margin-top:32px">Foolscap provides general document templates and tooling for convenience only. It is not a law firm and does not provide legal advice. · <a href="index.html">Back to app</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+</main>
+
+<footer class="sitefoot">
+  <p class="madeby">Foolscap — made with <span class="heart" aria-hidden="true">♥</span> by <a href="https://artivicolab.com" target="_blank" rel="noopener noreferrer">Artivicolab</a> · <a href="index.html">Back to app</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+</footer>
+
+<script>
+(function () {
+  var docIn = document.getElementById('docIn');
+  var hashIn = document.getElementById('hashIn');
+  var result = document.getElementById('result');
+  var resultLine = document.getElementById('resultLine');
+  var computedEl = document.getElementById('computed');
+
+  document.getElementById('fileBtn').addEventListener('click', function () {
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.txt,.md,.markdown,text/plain';
+    inp.addEventListener('change', function () {
+      var f = inp.files && inp.files[0];
+      if (!f) return;
+      var r = new FileReader();
+      r.onload = function () { docIn.value = String(r.result || ''); };
+      r.readAsText(f);
+    });
+    inp.click();
+  });
+
+  async function sha256Hex(text) {
+    var data = new TextEncoder().encode(String(text));
+    var buf = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf))
+      .map(function (b) { return b.toString(16).padStart(2, '0'); })
+      .join('');
+  }
+
+  document.getElementById('checkBtn').addEventListener('click', async function () {
+    var text = docIn.value;
+    var expected = (hashIn.value || '').trim().toLowerCase().replace(/[^0-9a-f]/g, '');
+    if (!text.trim()) { alert('Paste the document text first.'); return; }
+    var got = await sha256Hex(text);
+    computedEl.textContent = got;
+    result.hidden = false;
+    if (!expected) {
+      resultLine.className = 'muted';
+      resultLine.textContent = 'Computed the fingerprint below. Paste the certificate fingerprint to compare.';
+    } else if (got === expected) {
+      resultLine.className = 'session-ok';
+      resultLine.textContent = '✔ Match — this text is byte-identical to what was signed. Unaltered.';
+    } else {
+      resultLine.className = 'session-error';
+      resultLine.textContent = '✕ No match — this text differs from what was signed, or was not pasted exactly.';
+    }
+  });
+})();
+</script>
+</body>
+</html>

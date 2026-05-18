@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.classList.replace('no-js','js')</script>
+<title>Privacy — Foolscap</title>
+<meta name="description" content="How Foolscap handles your data: documents stay on your device; the website uses Google Analytics for anonymous usage statistics.">
+<link rel="stylesheet" href="css/style.css">
+<!-- Google Analytics 4. Replace G-XXXXXXXXXX with your real Measurement ID. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+gtag('js', new Date());
+gtag('consent', 'default', { analytics_storage: 'denied' });
+try { if (localStorage.getItem('foolscap:consent') === 'granted') gtag('consent', 'update', { analytics_storage: 'granted' }); } catch (e) {}
+gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
+</script>
+<script src="js/consent.js" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="logo" href="index.html">Foolscap</a>
+  <nav class="topnav">
+    <a class="btn" href="index.html">Back to app</a>
+  </nav>
+</header>
+
+<main class="legal">
+  <h1>Privacy Policy</h1>
+  <p class="muted">Last updated: 17 May 2026</p>
+
+  <p>Foolscap is operated by <a href="https://artivicolab.com" target="_blank" rel="noopener noreferrer">Artivicolab</a>. This page explains, in plain language, what data is and is not collected when you use Foolscap.</p>
+
+  <h2>Your documents stay on your device</h2>
+  <p>Foolscap builds and previews your contract entirely inside your browser. The documents you generate and any drafts you save are stored locally on your device (in your browser's IndexedDB storage). Your document content, the field values you type, and your saved drafts are <strong>never uploaded to, transmitted to, or seen by Artivicolab</strong>. We have no server that receives them, no account system, and no man in the middle.</p>
+
+  <h2>Live signing (optional, peer-to-peer)</h2>
+  <p>A contract only works when both parties have it, so Foolscap lets you send it <strong>directly to the person you are contracting with</strong> — and nowhere else. If you choose to start a <strong>Live signing</strong> session, Foolscap opens a direct, end-to-end, browser-to-browser connection (WebRTC) between you and the specific person you invite, so they can review and sign it live. The contract goes <strong>only</strong> to that counterparty, only because you chose to send it. It is <strong>never</strong> uploaded to Artivicolab and never passes through any server of ours — we run none, and there is no intermediary. A public STUN service is used only to help the two browsers find each other; it never receives your document. Live signing is entirely opt-in: if you never start a session, the document never leaves your browser at all.</p>
+
+  <h2>What the website does collect: analytics (consent-gated)</h2>
+  <p><strong>Analytics is off until you opt in.</strong> Using Google Consent Mode, analytics storage is set to <em>denied</em> by default; when you first visit, a banner asks whether to allow anonymous usage analytics. If you Decline (or do nothing), Google Analytics does not store cookies or collect your usage. Only if you click <strong>Accept</strong> does the following apply. When analytics is enabled, Google Analytics — acting as our processor — collects standard web-analytics information, which may include:</p>
+  <p>• pages you view and the order you view them in; • the site or link that referred you; • approximate, IP-derived location (we have IP anonymization enabled, so your full IP address is not stored by GA4); • device, browser, operating system, and screen information; • general interaction events on the page.</p>
+  <p>This analytics data is <strong>not</strong> linked to your name or email (we collect neither) and <strong>never</strong> includes the contents of any document, field, or draft you create in Foolscap. We use it only in aggregate to see which documents and features are used.</p>
+
+  <h2>Electronic Signing Certificate</h2>
+  <p>If you complete a signing session, Foolscap embeds an <strong>Electronic Signing Certificate</strong> into the document. It records the names, email addresses, and timestamps that you and the other party each enter, the electronic-signing consent statement each party explicitly affirms before signing, SHA-256 fingerprints of the document, and the <strong>public IP address</strong> that a neutral public STUN service observed for each party while the two browsers established their direct connection. That IP is recorded inside the certificate as corroboration of the session; no device identifier or precise geolocation is collected, and the IP is not verified location data. The certificate is computed entirely in your browsers and stored only inside your own copy of the document — it is <strong>not</strong> sent to Artivicolab or any server we run (the STUN service only helps the two browsers find each other; it never receives the document). It captures each party's consent and intent, records the network each signed from, and shows the document was unchanged between the two signing events; it is provided for transparency and is not legal advice, and it does not by itself determine the legal enforceability of a signature.</p>
+
+  <h2>Identity confirmation for live signing (Sign in with Google — required)</h2>
+  <p>Live signing <strong>requires</strong> each party to confirm their identity with <strong>Sign in with Google</strong> — any Google or Google&nbsp;Workspace account (business addresses on Google, not only <code>@gmail.com</code>). It is currently the only supported provider. <strong>There is no self-attested live-signing option</strong>: if you or the other party do not have a Google account, the alternative is to <strong>print the document and sign on paper</strong> instead. When you confirm, your browser opens Google's sign-in directly; Google returns a cryptographically signed token confirming you control a Google-verified email, and the other party's browser checks that signature. <strong>Your document, its contents, the other party, and the certificate are never sent to Google</strong> — Google sees only that you signed in to an app at a moment in time, the same as any “Sign in with Google” button and similar to an email provider delivering a one-time code. We run no server in this; the check is browser-to-Google and verified in the parties' browsers. The confirmed email is the only email recorded in the certificate, as evidence that two different account-holders signed; it proves control of an email account, not a government identity, and is not a determination of legal enforceability. Google's handling of the sign-in is governed by Google's own privacy policy. Choosing the paper route keeps everything offline between you and the other party; no certificate is created.</p>
+
+  <h2>Cookies</h2>
+  <p>If — and only if — you accept analytics, Google Analytics sets cookies (for example <code>_ga</code> and <code>_ga_&lt;id&gt;</code>) to distinguish unique visitors and sessions; these typically persist for up to about two years unless you clear them. If you decline, these cookies are not set. The only other thing Foolscap stores on your device is a small local record of your own choices and drafts (your consent decision, and any drafts/contracts you save) — these never leave your browser. Foolscap uses no advertising or cross-site tracking cookies.</p>
+
+  <h2>How to opt out</h2>
+  <p>You can prevent or stop analytics collection at any time by any of the following:</p>
+  <p>• click <strong>Decline</strong> on the consent banner (this is also the effect of doing nothing); • to change or withdraw a previous choice, clear this site's data in your browser — the consent banner returns and defaults to denied; • install Google's official <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Analytics Opt-out Browser Add-on</a>; • block or clear cookies for this site, or use tracking-protection / an ad-tracker blocker; • disable JavaScript (analytics will not load — though the app also needs JavaScript).</p>
+
+  <h2>Data retention</h2>
+  <p>Analytics data is retained according to our Google Analytics configuration (Google's retention controls, typically up to 14 months) and then deleted or aggregated by Google. Documents and drafts on your device are kept until you delete them — you can remove them from the Drafts panel in the app or by clearing this site's data in your browser.</p>
+
+  <h2>Your rights and choices</h2>
+  <p>The honest summary first: <strong>Artivicolab holds almost no personal data about you.</strong> We have no accounts, collect no name, email, or payment information, and never receive your documents or drafts. The only personal data processed about you is the anonymous, aggregate analytics that Google collects <em>if you opt in</em> — and that is not linked to your identity.</p>
+  <p>Subject to your local law (including the EU/UK GDPR and, for California residents, the CCPA), you may have the right to access, correct, delete, port, restrict, or object to the processing of personal data about you, to withdraw consent, and to opt out of any "sale" or "sharing" of personal information. For completeness: we do not sell or share personal information, do not use it for cross-context behavioral advertising, do not profile you, and offer no financial incentives, so several of these rights have nothing to act on here.</p>
+  <p>Because we keep no account or identifier for you, the practical ways to exercise these rights are direct and immediate: <strong>analytics</strong> — Decline on the banner, or clear site data to reset your choice (the analytics opt-out add-on also works); <strong>local data</strong> — delete drafts from the Drafts panel or clear this site's data in your browser (we cannot do this for you because we never have it); <strong>aggregate analytics already collected</strong> — contact us and we will make a request to Google on your behalf. You also have the right to lodge a complaint with your local data protection authority.</p>
+  <p>Google may process analytics data on infrastructure outside your country, subject to Google's own safeguards and privacy terms. To make any request or ask a question, use the contact below.</p>
+
+  <h2>Children</h2>
+  <p>Foolscap is not directed to children under the age at which consent is required by applicable law, and we do not knowingly collect their personal information.</p>
+
+  <h2>Changes</h2>
+  <p>We may update this Policy. We will revise the "Last updated" date above, and material changes will be reflected on this page.</p>
+
+  <h2>Contact</h2>
+  <p>Questions or privacy requests? <button type="button" id="contactBtn" class="btn btn-ghost contact-btn">Contact Artivicolab</button> or visit <a href="https://artivicolab.com" target="_blank" rel="noopener noreferrer">artivicolab.com</a>.</p>
+
+  <p class="muted" style="font-size:12px;margin-top:32px">Foolscap provides general document templates for convenience only. It is not a law firm and does not provide legal advice. Have important agreements reviewed by a licensed attorney.</p>
+</main>
+
+<footer class="sitefoot">
+  <p class="madeby">Foolscap — made with <span class="heart" aria-hidden="true">♥</span> by <a href="https://artivicolab.com" target="_blank" rel="noopener noreferrer">Artivicolab</a> · <a href="index.html">Back to app</a>  · <a href="terms.html">Terms</a> · <a href="about.html">About</a> · <a href="verify.html">Verify</a></p>
+</footer>
+
+<script>
+// Email assembled at click time so the address never appears in the markup.
+(function () {
+  var b = document.getElementById('contactBtn');
+  if (!b) return;
+  b.addEventListener('click', function () {
+    var who = ['artivicolab', 'gmail.com'].join('@');
+    var s = encodeURIComponent('Foolscap — privacy request / feedback');
+    window.location.href = 'mailto:' + who + '?subject=' + s;
+  });
+})();
+</script>
+</body>
+</html>

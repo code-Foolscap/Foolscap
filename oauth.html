@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Confirming identity…</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- Static redirect catcher for the OpenID Connect (Sign in with Google) popup.
+     Google returns the signed ID token in the URL fragment (#id_token=…). This
+     page hands it back to the window that opened it and closes. It performs NO
+     verification (that is done in js/oidc.js in the opener) and stores nothing.
+     It only ever messages its OWN origin, and the opener checks origin + a
+     random state value, so the token cannot be injected by another site. -->
+<main class="picker" style="text-align:center">
+  <section class="picker-intro">
+    <h1>Confirming your identity…</h1>
+    <p id="msg">You can close this window if it does not close on its own.</p>
+  </section>
+</main>
+<script>
+(function () {
+  function parse(s) {
+    var o = {}, p = new URLSearchParams(s.replace(/^[#?]/, ""));
+    p.forEach(function (v, k) { o[k] = v; });
+    return o;
+  }
+  // Token is in the fragment; an error may come back in either spot.
+  var f = parse(location.hash || "");
+  var q = parse(location.search || "");
+  var payload = {
+    source: "foolscap-oidc",
+    state: f.state || q.state || "",
+    idToken: f.id_token || "",
+    error: f.error || q.error || (f.id_token ? "" : "no_token"),
+  };
+  try {
+    if (window.opener) {
+      window.opener.postMessage(payload, location.origin);
+    }
+  } catch (e) {}
+  // Scrub the token from the address bar before anything else can read it.
+  try {
+    history.replaceState(null, "", location.pathname);
+  } catch (e) {}
+  setTimeout(function () {
+    try { window.close(); } catch (e) {}
+    var m = document.getElementById("msg");
+    if (m) m.textContent = "Done — you can close this window and return to Foolscap.";
+  }, 300);
+})();
+</script>
+</body>
+</html>

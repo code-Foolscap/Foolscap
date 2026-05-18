@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.classList.replace('no-js','js')</script>
+<title>Foolscap — Private legal contract builder</title>
+<meta name="description" content="Generate NDAs, leases, and contractor agreements in your browser. Your draft never leaves your computer.">
+<link rel="stylesheet" href="css/style.css">
+<!-- Google Analytics 4. Replace G-XXXXXXXXXX with your real Measurement ID. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+gtag('js', new Date());
+gtag('consent', 'default', { analytics_storage: 'denied' });
+try { if (localStorage.getItem('foolscap:consent') === 'granted') gtag('consent', 'update', { analytics_storage: 'granted' }); } catch (e) {}
+gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
+</script>
+<script src="js/consent.js" defer></script>
+</head>
+<body>
+
+<noscript>
+  <div class="noscript-screen">
+    <h1>Foolscap needs JavaScript</h1>
+    <p>Foolscap builds and previews your contract entirely inside your browser — nothing is uploaded and nothing is sent to a server. That privacy is the whole point, and it requires JavaScript.</p>
+    <p>Please enable JavaScript for this page and reload. Your drafts and documents never leave your device.</p>
+  </div>
+</noscript>
+
+<header class="topbar">
+  <a class="logo" href="index.html" id="homeLink">Foolscap</a>
+  <nav class="topnav">
+    <span id="sessionBadge" class="session-badge" hidden></span>
+    <button id="newDocBtn" class="btn" type="button" hidden>New document</button>
+    <button id="draftsBtn" class="btn" type="button">Drafts</button>
+    <button id="soundBtn" class="btn btn-ghost" type="button" aria-pressed="false" title="Ceremony sound">Sound off</button>
+  </nav>
+</header>
+
+<main id="picker" class="picker">
+  <section class="picker-intro">
+    <h1>Sign a contract. Free, no account.</h1>
+    <p>Generate or fill a contract, sign it live with the other party, and keep a verified PDF with a signing certificate. No sign-up. Your document only leaves your browser when you send it to the person you are signing with.</p>
+    <p><button id="liveBtn" class="btn" type="button">Received an invite to sign? Open signing</button></p>
+  </section>
+  <div id="docGrid" class="doc-grid" role="list"></div>
+</main>
+
+<main id="builder" class="builder" hidden>
+  <div id="preview" class="sheet" aria-live="polite">
+    <article id="docCanvas" class="doc-canvas"></article>
+    <div id="sealMount"></div>
+    <aside class="doc-notes" aria-label="About this document">
+      <p class="doc-notes-tag">About this document — shown here only, not part of the contract or its PDF</p>
+      <p><strong>You can modify it.</strong> Everything on this Cover Page is yours to edit. The source's Standard Terms are incorporated by reference at the linked URL and are not reproduced or changed by Foolscap. Under CC BY 4.0 you only need to keep the licence notice and source link that appear in the document's footer; if you later alter that Standard Terms text yourself, you must say that you changed it.</p>
+      <p><strong>Who is who, and the signature block.</strong> The two sides are named at the top of the document and repeated above each signature. For the AI Addendum / SaaS docs they are <strong>Provider</strong> (the party offering the product/service) and <strong>Customer</strong> (the party receiving it); other templates use <strong>Party 1 / Party 2</strong> or <strong>Disclosing / Receiving Party</strong>. In each signature block: <strong>Signature</strong> is where you draw or type your mark, <strong>Print Name</strong> is your full name spelled out, <strong>Title</strong> is your role (e.g. “Director”, or “Individual” if you’re signing for yourself), and <strong>Date</strong> is the day you sign.</p>
+      <p class="muted small">What “signed &amp; sealed” means is explained on the Electronic Signing Certificate itself, once both parties sign. Not legal advice — see <a href="terms.html">Terms</a>.</p>
+    </aside>
+  </div>
+  <div class="action-bar">
+    <div class="canvas-meta">
+      <h2 id="docTitle">Document</h2>
+      <p id="docSubtitle" class="muted"></p>
+    </div>
+    <div class="action-buttons">
+      <button id="saveDraftBtn" class="btn" type="button">Save draft</button>
+      <button id="sendSignBtn" class="btn btn-primary" type="button">Send for live signing</button>
+      <button id="printBtn" class="btn" type="button" title="For a clean page, turn off “Headers and footers” in the print dialog — that removes the browser-added URL, date and page numbers. Foolscap adds none of its own.">Print / Save PDF</button>
+    </div>
+  </div>
+</main>
+
+<aside id="draftsPanel" class="drawer" hidden aria-label="Saved drafts">
+  <div class="drawer-head">
+    <h2>Saved drafts</h2>
+    <button id="closeDrafts" class="btn btn-ghost" type="button">Close</button>
+  </div>
+  <ul id="draftsList" class="drafts-list"></ul>
+  <p id="draftsEmpty" class="muted" hidden>No saved drafts yet.</p>
+</aside>
+<aside id="sessionPanel" class="drawer" hidden aria-label="Live signing session">
+  <div class="drawer-head">
+    <h2>Live signing</h2>
+    <button id="closeSession" class="btn btn-ghost" type="button">Close</button>
+  </div>
+  <div id="sessionBody" class="session-body"></div>
+</aside>
+<div id="scrim" class="scrim" hidden></div>
+
+<footer class="sitefoot">
+  <div class="brand">
+    <span class="gavel" aria-hidden="true">
+      <span class="gavel-arm">
+        <span class="gavel-head"></span>
+      </span>
+      <span class="gavel-block"></span>
+      <span class="spark spark-1">✦</span>
+      <span class="spark spark-2">★</span>
+      <span class="spark spark-3">✦</span>
+      <span class="spark spark-4">✧</span>
+      <span class="spark spark-5">★</span>
+    </span>
+    <p class="madeby">
+      Foolscap — made with <span class="heart" aria-hidden="true">♥</span> by
+      <a href="https://artivicolab.com" target="_blank" rel="noopener noreferrer">Artivicolab</a>
+    </p>
+    <button type="button" id="contactBtn" class="btn btn-ghost contact-btn">
+      Missing a contract or feature? Found a bug? Contact us
+    </button>
+  </div>
+  <p class="madeby analytics-note">Your documents never leave your browser. This site uses Google Analytics for anonymous, aggregate usage statistics — <a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="verify.html">Verify</a>.</p>
+  <p class="disclaimer">Foolscap provides general document templates for convenience only. It is not a law firm and does not provide legal advice. Have important agreements reviewed by a licensed attorney.</p>
+</footer>
+
+<div id="pagemark" class="pagemark" aria-hidden="true"></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

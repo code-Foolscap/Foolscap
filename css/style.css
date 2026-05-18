@@ -1,0 +1,711 @@
+/* Foolscap — a ceremony that produces a document.
+   Design system: serif everywhere, near-black on warm off-white, ONE accent
+   (the seal) and nothing else, weight in the motion. Restraint as the language. */
+
+:root {
+  --paper: #fffdf8;          /* the sheet */
+  --bg: #f3efe6;             /* around the sheet */
+  --ink: #0a0a0a;            /* near-pure black */
+  --muted: rgba(10, 10, 9, 0.52);
+  --faint: rgba(10, 10, 9, 0.30);
+  --line: rgba(10, 10, 9, 0.16);
+  --seal: #7c1f1f;           /* the ONE accent — used only on the seal */
+  --field: rgba(10, 10, 9, 0.045);
+
+  /* Serif is the system. Sans/mono only for tabular + technical marks. */
+  --serif: "Iowan Old Style", "Hoefler Text", "Sorts Mill Goudy", "Times New Roman", Georgia, serif;
+  --mono: "SFMono-Regular", ui-monospace, Menlo, "Liberation Mono", monospace;
+
+  /* Weight, not bounce. Like closing the cover of a book. */
+  --ease-heavy: cubic-bezier(0.16, 1, 0.3, 1);
+  --slow: 720ms;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+/* Scrollbars in the editorial monochrome theme — thin, inky, unobtrusive. */
+* { scrollbar-width: thin; scrollbar-color: rgba(10, 10, 9, 0.3) transparent; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(10, 10, 9, 0.24);
+  border: 3px solid var(--bg);
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(10, 10, 9, 0.45); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+html { background: var(--bg); min-height: 100%; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.topbar, .sitefoot { flex: none; }
+.picker { flex: 1 0 auto; }
+
+/* No-JS */
+html.no-js .topnav,
+html.no-js #picker,
+html.no-js #builder,
+html.no-js #draftsPanel,
+html.no-js #sessionPanel,
+html.no-js #scrim { display: none !important; }
+.noscript-screen { flex: 1 0 auto; max-width: 560px; margin: 72px auto; padding: 0 24px; }
+.noscript-screen h1 { font-size: 30px; margin: 0 0 14px; }
+.noscript-screen p { color: var(--muted); }
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.logo {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.topnav { display: flex; gap: 6px; align-items: center; }
+
+/* Buttons — serif, quiet, ink. No fills except the primary. */
+.btn {
+  font-family: var(--serif);
+  font-size: 15px;
+  padding: 7px 16px;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color var(--slow) var(--ease-heavy),
+              background var(--slow) var(--ease-heavy),
+              color var(--slow) var(--ease-heavy);
+}
+.btn:hover { border-color: var(--ink); }
+.btn-primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn-primary:hover { background: #000; }
+.btn-ghost { border-color: transparent; color: var(--muted); }
+.btn-ghost:hover { color: var(--ink); }
+.muted { color: var(--muted); }
+
+/* Picker */
+.picker { max-width: 1320px; margin: 0 auto; padding: 80px 40px; }
+.picker-intro h1 {
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  margin: 0 0 16px;
+  max-width: 16ch;
+}
+.picker-intro p { color: var(--muted); margin: 0 0 52px; font-size: 19px; max-width: 56ch; }
+.doc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+@media (max-width: 1080px) { .doc-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 620px) { .doc-grid { grid-template-columns: 1fr; } }
+.doc-card {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 26px 24px;
+  background: var(--bg);
+  border: 0;
+  cursor: pointer;
+  font-family: var(--serif);
+  transition: background var(--slow) var(--ease-heavy);
+}
+.doc-card:hover { background: var(--paper); }
+.doc-card-upload { box-shadow: inset 0 0 0 1px var(--faint); }
+.doc-card-upload .doc-name::after { content: " ＋"; color: var(--faint); }
+
+.own-tools { margin-bottom: 22px; }
+.own-doc { white-space: pre-wrap; min-height: 52vh; outline: none; }
+.own-doc:empty::before { content: attr(data-ph); color: var(--muted); font-style: italic; }
+.doc-canvas.locked .own-doc { min-height: 0; }
+@media print { .own-tools { display: none; } .own-doc { min-height: 0; } }
+.doc-cat { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
+.doc-name { font-size: 22px; font-weight: 600; }
+.doc-blurb { color: var(--muted); font-size: 15px; }
+
+/* Builder = a single canvas. The contract IS the form. */
+.builder { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+/* Compact doc title + progress, now living in the fixed footer (left side). */
+.canvas-meta { min-width: 0; }
+.canvas-meta h2 {
+  font-size: 15px; font-weight: 600; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.canvas-meta p { margin: 1px 0 0; font-size: 12px; color: var(--muted); }
+
+.sheet { flex: 1 1 auto; overflow-y: auto; min-height: 0; padding: 40px 24px 96px; }
+
+/* Fixed footer: Save / Send / Print, pinned to the bottom of the screen and
+   always visible while the document scrolls. Lives inside #builder, so it is
+   absent on the home screen and hidden in print. The .sheet has matching
+   bottom padding so nothing is ever hidden behind it. */
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 24px;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.action-buttons { display: flex; gap: 8px; flex: none; }
+@media (max-width: 760px) {
+  .action-bar { padding: 10px 14px; flex-wrap: wrap; gap: 8px; }
+  .canvas-meta { flex: 1 1 100%; }
+  .action-buttons { width: 100%; }
+  .action-buttons .btn { flex: 1; }
+}
+.doc-canvas {
+  background: var(--paper);
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 84px 92px;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 24px 60px -28px rgba(0,0,0,0.30);
+  font-size: 17px;
+  line-height: 1.85;
+  transition: filter var(--slow) var(--ease-heavy), opacity var(--slow) var(--ease-heavy);
+}
+.doc-canvas h1 { font-size: 27px; font-weight: 600; text-align: center; letter-spacing: 0.02em; margin: 0 0 36px; }
+.doc-canvas h2 { font-size: 18px; font-weight: 600; margin: 32px 0 10px; }
+.doc-canvas p { margin: 0 0 14px; }
+.doc-canvas .fineprint {
+  margin-top: 40px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--faint);
+}
+.doc-canvas .fineprint a { color: var(--faint); }
+
+/* Inline fields — the placeholders ARE the inputs. No boxes. */
+.fld {
+  /* inline-block + min-width so an EMPTY field still has a click target and
+     the caret can land (empty inline contenteditable collapses to 0 width). */
+  display: inline-block;
+  min-width: 7ch;
+  max-width: 100%;
+  white-space: pre-wrap;
+  vertical-align: baseline;
+  border-bottom: 1px dotted var(--faint);
+  padding: 0 1px;
+  outline: none;
+  cursor: text;
+  transition: background var(--slow) var(--ease-heavy), border-color var(--slow) var(--ease-heavy);
+}
+.fld:hover { background: var(--field); }
+.fld:focus { border-bottom: 1px solid var(--ink); background: var(--field); }
+/* Screen-only marker so you can scan back to what YOU typed (filled fields)
+   vs. the document prose, and tell it apart from empty placeholders. This is
+   NEVER printed — the @media print block strips it. */
+.fld:not(.empty),
+.sigfield:not(.empty) {
+  background: rgba(10, 10, 9, 0.055);
+  border-bottom: 1px solid var(--faint);
+  border-radius: 2px;
+}
+.fld:not(.empty):hover,
+.fld:not(.empty):focus,
+.sigfield:not(.empty):hover { background: rgba(10, 10, 9, 0.10); }
+.fld-select { background: rgba(10, 10, 9, 0.055); border-radius: 2px; }
+.fld.empty::before {
+  content: attr(data-label);
+  color: var(--muted);
+  font-style: italic;
+  pointer-events: none; /* clicking the placeholder still focuses the field */
+}
+.fld.empty:focus::before { content: ""; }
+.doc-canvas.locked .fld { min-width: 0; }
+
+/* Signature field — a click target that opens the draw/type pad */
+.sigfield {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--faint);
+  padding: 0 4px 2px;
+  min-width: 16ch;
+  cursor: pointer;
+  vertical-align: bottom;
+  line-height: 1;
+}
+.sigfield:hover { background: var(--field); }
+.sigfield.empty::before {
+  content: "✎ " attr(data-label);
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.85em;
+}
+.sigimg { height: 44px; width: auto; max-width: 100%; vertical-align: bottom; }
+.sigtype {
+  font-family: "Snell Roundhand", "Apple Chancery", "Segoe Script", "Brush Script MT", cursive;
+  font-size: 1.5em;
+  line-height: 1;
+}
+.sigblank { letter-spacing: 1px; color: var(--faint); }
+/* Locked / print: no button chrome, just the mark (or a blank rule) */
+.doc-canvas.locked .sigfield { pointer-events: none; background: transparent; border-bottom: 1px solid var(--faint); min-width: 16ch; padding: 0 2px 2px; }
+.doc-canvas.locked .sigfield.empty::before { content: ""; }
+
+/* Signature pad */
+.sigpad-overlay {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(10,10,9,0.5);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.sigpad {
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  max-width: 560px; width: 100%;
+  padding: 22px;
+}
+.sigpad-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.sigpad-head strong { font-size: 16px; }
+.sigpad-tabs { display: flex; gap: 6px; }
+.sigpad-tab { font-size: 13px; padding: 5px 12px; }
+.sigpad-tab.is-on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.sigpad-canvas {
+  width: 100%; height: 180px; display: block;
+  background: #fff;
+  border: 1px dashed var(--line);
+  touch-action: none; cursor: crosshair;
+}
+.sigpad-typed {
+  width: 100%; height: 180px;
+  font-family: "Snell Roundhand", "Apple Chancery", "Segoe Script", cursive;
+  font-size: 34px; text-align: center;
+}
+.sigpad-hint { margin: 8px 0 0; }
+.sigpad-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+@media print { .sigpad-overlay { display: none !important; } }
+.fld-select {
+  font: inherit;
+  color: inherit;
+  background: var(--field);
+  border: 0;
+  border-bottom: 1px solid var(--faint);
+  padding: 0 2px;
+  cursor: pointer;
+  /* Sit inline within the sentence, size to content, never overflow the page */
+  display: inline;
+  width: auto;
+  max-width: 100%;
+  vertical-align: baseline;
+  -webkit-appearance: menulist;
+  appearance: menulist;
+  white-space: normal;
+}
+/* nowrap keeps the dropdown and its trailing "." on the same line so the
+   period is never orphaned below a long option. */
+.sel { display: inline; white-space: nowrap; }
+.sel-punct { white-space: normal; }
+/* The plain-text twin of a select: hidden while editing, shown (as ordinary
+   sentence text) when the doc is locked for signing or printed — so the PDF
+   never shows a form box or dropdown arrow. The twin already contains the
+   punctuation, so the on-screen .sel-punct is hidden in those states. */
+.sel-val { display: none; }
+.doc-canvas.locked .fld-select,
+.doc-canvas.locked .sel-punct { display: none; }
+.doc-canvas.locked .sel-val { display: inline; }
+.doc-canvas.locked .fld { border-bottom: 0; background: transparent; cursor: default; pointer-events: none; }
+.doc-canvas.locked .fld.empty::before { font-style: normal; color: var(--ink); }
+
+/* Drawer (drafts + signing) */
+.scrim { position: fixed; inset: 0; background: rgba(10,10,9,0.42); z-index: 20; }
+.drawer {
+  position: fixed; top: 0; right: 0;
+  width: min(440px, 92vw); height: 100vh;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  z-index: 21; padding: 28px; overflow-y: auto;
+}
+.drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.drawer-head h2 { font-size: 22px; font-weight: 600; margin: 0; }
+.drafts-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.drafts-list li { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); }
+.draft-open { flex: 1; text-align: left; background: none; border: 0; cursor: pointer; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; font-family: var(--serif); color: var(--ink); }
+.draft-open strong { font-size: 16px; font-weight: 600; }
+.draft-open .muted { font-size: 13px; }
+
+.session-badge { align-self: center; font-size: 13px; color: var(--ink); white-space: nowrap; }
+.session-badge[data-state="connected"]::first-letter { color: var(--seal); }
+.session-badge[data-state="failed"],
+.session-badge[data-state="disconnected"],
+.session-badge[data-state="closed"] { color: var(--muted); }
+.session-body { display: flex; flex-direction: column; gap: 12px; font-size: 15px; }
+.session-roles { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.session-step { font-size: 14px; font-weight: 600; margin: 8px 0 0; }
+.session-code {
+  width: 100%; font-family: var(--mono); font-size: 12px;
+  padding: 10px; border: 1px solid var(--line); border-radius: 2px;
+  background: var(--paper); color: var(--ink); resize: vertical;
+}
+.small { font-size: 13px; }
+/* Upfront expectation-setting callout at the live-signing gate. */
+.session-note {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-left: 3px solid var(--seal);
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+.session-note strong { font-weight: 700; }
+.session-ok { color: var(--ink); font-weight: 600; font-size: 14px; }
+/* Error banner at the TOP of the panel */
+.session-error {
+  color: var(--seal);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 14px;
+  padding: 9px 11px;
+  border: 1px solid var(--seal);
+  border-radius: 2px;
+  background: rgba(124, 31, 31, 0.07);
+}
+/* The offending field lights up */
+.input-error,
+.input-error.session-code {
+  border-color: var(--seal) !important;
+  box-shadow: 0 0 0 2px rgba(124, 31, 31, 0.2);
+}
+button.input-error {
+  outline: 2px solid var(--seal);
+  outline-offset: 1px;
+}
+.consent-row.input-error {
+  border: 1px solid var(--seal);
+  border-radius: 2px;
+  padding: 6px 8px;
+  background: rgba(124, 31, 31, 0.07);
+}
+.consent-row { display: flex; gap: 9px; align-items: flex-start; font-size: 13px; line-height: 1.5; margin: 6px 0 2px; }
+.consent-row input { margin-top: 3px; flex: none; accent-color: var(--ink); }
+
+/* ---- The Electronic Signing Certificate — a designed artifact ---- */
+.verify-record {
+  position: relative;
+  max-width: 760px;
+  margin: 30px auto 0;
+  padding: 40px 56px 48px;
+  color: var(--ink);
+  /* Pre-rendered guilloche + double-rule frame. CSS gradients moiré into an
+     unreadable dark mesh at print DPI; a raster does not. The image carries
+     the frame, so no CSS border/outline here. print-color-adjust keeps it
+     when the browser would otherwise strip backgrounds for printing. */
+  background: var(--paper) url("../certificate-bg.jpg") center / 100% 100% no-repeat;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: seal-rise var(--slow) var(--ease-heavy) forwards;
+}
+@keyframes seal-rise { to { opacity: 1; transform: none; } }
+.verify-record h2 {
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 6px;
+}
+.verify-record p {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  margin: 0 0 14px;
+  text-align: center;
+}
+.verify-record p:first-of-type { font-family: var(--serif); font-size: 12.5px; color: var(--muted); max-width: 60ch; margin-inline: auto; }
+/* Emphasis tier — the Result + Identity verdicts. A heavier serif band,
+   ruled top and bottom, so the eye lands on the conclusion first instead of
+   it sitting at the same weight as the mono technical metadata. Monochrome
+   per the design system; the oxblood accent only on the broken state. */
+.verify-record .callout {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--ink);
+  text-align: center;
+  letter-spacing: 0.01em;
+  max-width: 64ch;
+  margin: 18px auto;
+  padding: 9px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.verify-record.is-broken .callout { color: var(--seal); border-color: var(--seal); }
+/* the wax seal */
+.verify-record::after {
+  content: "";
+  position: absolute;
+  top: -36px; left: 50%;
+  width: 82px; height: 82px;
+  transform: translateX(-50%) scale(0.4);
+  border-radius: 50%;
+  /* border-radius clips the square JPG to the seal's circle (hides its
+     corners); the image already carries its own cream rim. */
+  background: var(--paper) url("../wax-seal.jpg") center / cover no-repeat;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  opacity: 0;
+}
+.verify-record.is-sealed::after {
+  animation: seal-stamp var(--slow) var(--ease-heavy) 180ms forwards;
+}
+@keyframes seal-stamp {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.4) rotate(-12deg); }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: translateX(-50%) scale(1) rotate(0deg); }
+}
+/* No CSS frame now (the image carries it), so flag a broken match with an
+   inset oxblood outline over the artwork. */
+.verify-record.is-broken { outline: 2px solid var(--seal); outline-offset: -7px; }
+.verify-record.is-broken p:last-of-type { color: var(--seal); font-weight: 700; }
+
+/* Choreography — when sealed, the document settles with weight */
+.builder.sealed .doc-canvas { filter: grayscale(0.12) contrast(0.99); }
+
+/* Footer / brand */
+.sitefoot { max-width: 1000px; margin: 0 auto; padding: 32px; text-align: center; }
+/* When the builder (with its fixed action bar) is on screen, give the site
+   footer extra bottom clearance so its content is never hidden behind the
+   bar. Scoped so the home/picker doesn't get the empty gap. */
+#builder:not([hidden]) ~ .sitefoot { padding-bottom: 96px; }
+.disclaimer { color: var(--muted); font-size: 12px; line-height: 1.55; max-width: 70ch; margin-inline: auto; }
+.brand { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px; }
+.madeby { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+.madeby a { color: var(--ink); font-weight: 600; text-decoration: none; }
+.madeby a:hover { text-decoration: underline; }
+.analytics-note { font-size: 12px; margin-top: 12px; }
+.analytics-note a { color: var(--ink); font-weight: 600; }
+.contact-btn { font-size: 13px; }
+
+.heart { display: inline-block; color: var(--seal); animation: heart-beat 1s ease-in-out infinite; }
+@keyframes heart-beat { 0%,100% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.16); } }
+
+.gavel { position: relative; display: inline-block; width: 56px; height: 46px; }
+.gavel-block { position: absolute; left: 13px; bottom: 0; width: 32px; height: 6px; background: var(--ink); }
+.gavel-arm { position: absolute; left: 24px; bottom: 6px; width: 6px; height: 28px; background: var(--ink); transform-origin: 50% 100%; animation: gavel-swing 1.15s var(--ease-heavy) infinite; }
+.gavel-head { position: absolute; top: -6px; left: 50%; width: 26px; height: 13px; margin-left: -13px; background: var(--ink); }
+@keyframes gavel-swing { 0% { transform: rotate(-40deg);} 28% { transform: rotate(12deg);} 36% { transform: rotate(7deg);} 48% { transform: rotate(-16deg);} 72% { transform: rotate(-32deg);} 100% { transform: rotate(-40deg);} }
+.spark { position: absolute; left: 32px; bottom: 9px; font-size: 11px; color: var(--seal); opacity: 0; pointer-events: none; animation: spark-fly 1.15s linear infinite; }
+.spark-1 { --tx:-24px;--ty:-28px; } .spark-2 { --tx:1px;--ty:-36px; } .spark-3 { --tx:26px;--ty:-25px; }
+.spark-4 { --tx:-32px;--ty:-6px; } .spark-5 { --tx:33px;--ty:-9px; }
+@keyframes spark-fly { 0%,26% { opacity:0; transform: translate(0,0) scale(.2);} 32% { opacity:1; transform: translate(0,0) scale(.85);} 100% { opacity:0; transform: translate(var(--tx),var(--ty)) scale(.35) rotate(170deg);} }
+
+/* Document fingerprint stamp — print only, a single in-flow line at the very
+   end of the contract. (A true repeating per-page footer with live data needs
+   a paged-media library; position:fixed only repeats in Chromium and overlaps
+   body text in Firefox, so we don't use it. The fingerprint is also inside the
+   signing certificate, so it is still on the signed artifact and verifiable.) */
+/* Owner decision (2026-05): the printed CONTRACT carries NO Foolscap metadata
+   outside the user's own form — no brand, hash, session, date or URL stamp.
+   The document SHA-256 still lives on the certificate page, so nothing
+   verifiable is lost. Kept hidden on screen AND print. */
+.pagemark { display: none !important; }
+@media print {
+  .pagemark { display: none !important; }
+}
+
+/* On-site notice shown below the contract — never part of the document/PDF */
+.doc-notes {
+  display: block;
+  max-width: 760px;
+  margin: 28px auto 0;
+  padding: 18px 22px;
+  border: 1px dashed var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.doc-notes p { margin: 0 0 9px; }
+.doc-notes p:last-child { margin-bottom: 0; }
+.doc-notes strong { color: var(--ink); }
+.doc-notes a { color: var(--ink); }
+.doc-notes-tag {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10.5px;
+  color: var(--faint);
+}
+@media print { .doc-notes { display: none !important; } }
+
+/* GA4 consent banner */
+.consent-banner {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 16px 28px;
+  background: var(--paper);
+  border-top: 1px solid var(--ink);
+  font-size: 13.5px;
+}
+.consent-banner p { margin: 0; max-width: 70ch; color: var(--ink); }
+.consent-banner a { color: var(--ink); font-weight: 600; }
+.consent-actions { display: flex; gap: 8px; flex: none; }
+@media (max-width: 620px) {
+  .consent-banner { padding: 14px 18px; }
+  .consent-actions { width: 100%; }
+  .consent-actions .btn { flex: 1; }
+}
+@media print { .consent-banner { display: none !important; } }
+
+/* Legal / manifesto pages */
+.legal { flex: 1 0 auto; max-width: 720px; margin: 0 auto; padding: 64px 28px 80px; }
+.legal h1 { font-size: 38px; font-weight: 600; line-height: 1.15; margin: 0 0 8px; }
+.legal h2 { font-size: 22px; font-weight: 600; margin: 36px 0 10px; }
+.legal p { margin: 0 0 16px; font-size: 17px; line-height: 1.8; }
+.legal a { color: var(--ink); }
+.legal code { font-family: var(--mono); font-size: 13px; background: var(--field); padding: 1px 5px; }
+
+@media (max-width: 760px) {
+  .topbar { padding: 14px 18px; flex-wrap: wrap; gap: 8px; }
+  .picker { padding: 56px 20px; }
+  .picker-intro h1 { font-size: 34px; }
+  .canvas-bar { padding: 14px 18px; flex-wrap: wrap; }
+  .sheet { padding: 24px 12px 150px; } /* clears the taller wrapped footer (meta + buttons) */
+  #builder:not([hidden]) ~ .sitefoot { padding-bottom: 172px; } /* taller wrapped bar */
+  .doc-canvas { padding: 40px 26px; }
+  .verify-record { padding: 32px 24px 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heart, .gavel-arm, .spark,
+  .verify-record, .verify-record::after { animation: none; }
+  .verify-record { opacity: 1; transform: none; }
+  .verify-record.is-sealed::after { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+/* ---- Print: only the document + its certificate, on clean paper ---- */
+/* Margin on @page repeats on EVERY printed page (including pages 2, 3 … where
+   element padding does NOT) — so this, not .doc-canvas padding, is what gives
+   continuation pages their whitespace and keeps the browser's page-number /
+   footer from crowding the text. */
+@page { size: A4; margin: 16mm 14mm; }
+@media print {
+  .topbar, .canvas-bar, .sitefoot, .drawer, .scrim, .topnav,
+  .consent-banner, .action-bar { display: none !important; }
+  /* Everything prints pure white & readable — no tint, no guilloche, even if
+     "Background graphics" is on. (The colour decoration stays on screen only.) */
+  html, body, .sheet, .doc-canvas, .own-doc {
+    background: #fff !important;
+    background-image: none !important;
+  }
+  .builder { display: block; }
+  .sheet { padding: 0; overflow: visible; }
+  .doc-canvas {
+    box-shadow: none; border: 0; max-width: none;
+    /* No element padding — the @page margin (which repeats per page) owns the
+       whitespace, so page 1 and pages 2+ are identical. A little bottom only. */
+    padding: 0 0 6mm;
+    filter: none !important; font-size: 12pt; color: #000;
+  }
+  .doc-canvas h2 { page-break-after: avoid; }
+  .doc-canvas p { orphans: 3; widows: 3; }
+  .fld { border: 0 !important; background: none !important; }
+  .fld.empty::before { color: #000; font-style: normal; }
+  .fld-select, .sel-punct { display: none !important; }
+  .sel-val { display: inline !important; color: #000; }
+  .sigfield {
+    border: 0 !important; border-bottom: 1px solid #000 !important;
+    background: none !important; min-width: 16ch; padding: 0 2px 2px; color: #000;
+  }
+  .sigfield.empty::before { content: "" !important; }
+  .sigtype { color: #000; }
+  .sigimg { filter: none !important; }
+  .doc-canvas .fineprint { font-size: 7.5pt; color: #555; margin-top: 26px; }
+  /* Certificate: its own fresh A4 page. The pre-rendered guilloche+frame
+     raster prints cleanly (no moiré, unlike the old CSS gradients) — kept in
+     colour via print-color-adjust; the wax seal raster comes from the base
+     ::after rule. */
+  .verify-record {
+    break-before: page;
+    page-break-before: always;
+    opacity: 1 !important;
+    transform: none !important;
+    margin: 0 !important;
+    max-width: none !important;
+    /* Generous top padding so the (now larger) wax seal sits fully INSIDE the
+       box, clear of the page edge, with the heading below it. */
+    padding: 28mm 14mm 16mm !important;
+    color: #000 !important;
+    background: var(--paper) url("../certificate-bg.jpg") center / 100% 100% no-repeat !important;
+    border: none !important;
+    outline: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  /* Compact so the whole certificate fits one A4 page. */
+  .verify-record h2 { font-size: 12pt !important; margin: 0 0 4mm !important; letter-spacing: 0.12em !important; }
+  .verify-record p { font-size: 8pt !important; line-height: 1.4 !important; margin: 0 0 2.6mm !important; }
+  .verify-record h2, .verify-record p { color: #000 !important; }
+  /* The verdict tier stays heavier than the metadata in print too. */
+  .verify-record .callout {
+    font-size: 10pt !important;
+    line-height: 1.35 !important;
+    margin: 4mm auto !important;
+    padding: 2mm 0 !important;
+    color: #000 !important;
+    border-color: #000 !important;
+  }
+  .verify-record.is-broken .callout { color: var(--seal) !important; border-color: var(--seal) !important; }
+  /* Stamp the seal in the PDF ONLY when the hashes matched — never on a
+     broken or not-yet-signed certificate (the seal must not overclaim). */
+  .verify-record.is-sealed::after {
+    opacity: 1 !important;
+    /* Positive offset INSIDE the box (not the screen's -26px overhang) so the
+       full circle prints — never clipped by the page top. */
+    top: 5mm !important;
+    width: 20mm !important;
+    height: 20mm !important;
+    transform: translateX(-50%) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  /* Keep the "do not rely" warning visible in the PDF too. */
+  .verify-record.is-broken {
+    outline: 2px solid var(--seal) !important;
+    outline-offset: -7px !important;
+  }
+}
