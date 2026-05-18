@@ -68,6 +68,17 @@ body {
 }
 .preview-banner strong { font-weight: 700; text-decoration: underline; }
 @media print { .preview-banner { display: none !important; } }
+/* Honest no-JS notice for the content pages (they remain readable without
+   JS; only the app needs it). The full app page uses .noscript-screen. */
+.noscript-note {
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 13px;
+  text-align: center;
+}
 
 /* No-JS */
 html.no-js .topnav,
@@ -90,6 +101,9 @@ html.no-js #scrim { display: none !important; }
   background: var(--bg);
 }
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-family: var(--serif);
   font-size: 23px;
   font-weight: 600;
@@ -97,6 +111,7 @@ html.no-js #scrim { display: none !important; }
   color: var(--ink);
   text-decoration: none;
 }
+.logo img { width: 26px; height: 26px; display: block; }
 .topnav { display: flex; gap: 6px; align-items: center; }
 
 /* Buttons — serif, quiet, ink. No fills except the primary. */
