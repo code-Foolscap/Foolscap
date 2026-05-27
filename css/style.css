@@ -68,8 +68,9 @@ body {
 }
 .preview-banner strong { font-weight: 700; text-decoration: underline; }
 @media print { .preview-banner { display: none !important; } }
-/* Honest no-JS notice for the content pages (they remain readable without
-   JS; only the app needs it). The full app page uses .noscript-screen. */
+/* Honest no-JS notice. Every page — including the app — keeps its real
+   static content (headline + pitch) visible without JS so it stays crawlable;
+   only the interactive, JS-populated bits are hidden. */
 .noscript-note {
   margin: 0;
   padding: 10px 16px;
@@ -80,16 +81,15 @@ body {
   text-align: center;
 }
 
-/* No-JS */
+/* No-JS: keep the static .picker-intro (h1 + pitch) visible; hide only the
+   interactive chrome and the JS-populated, empty-without-JS bits. */
 html.no-js .topnav,
-html.no-js #picker,
+html.no-js #docGrid,
+html.no-js #liveBtn,
 html.no-js #builder,
 html.no-js #draftsPanel,
 html.no-js #sessionPanel,
 html.no-js #scrim { display: none !important; }
-.noscript-screen { flex: 1 0 auto; max-width: 560px; margin: 72px auto; padding: 0 24px; }
-.noscript-screen h1 { font-size: 30px; margin: 0 0 14px; }
-.noscript-screen p { color: var(--muted); }
 
 /* Topbar */
 .topbar {
